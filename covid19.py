@@ -4,28 +4,33 @@ import pandas as pd
 # a little extra provisions necessary to skip extraneous rows and to make columns what we want them to be
 
 data_file_df = pd.read_excel('Texas COVID-19 Case Count Data by County.xlsx', skiprows={0, 1, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267})
-data_file_df.rename (columns=lambda x: x[-4:], inplace=True)   # This will need adjustment come October
+
+# All along, we knew that this will need adjustment come October
+# Five-digit month/years don't seem to easily fit into this method
+# data_file_df.rename (columns=lambda x: x[4:], inplace=True)   
+
+cols = data_file_df.columns.values
+newcols = []
+
+for col in cols:
+    if col == 'County Name':
+        newcols.append(col)
+    else:
+        newcol = ""
+
+        for char in col:
+            if (char >= "0" and char <= "9") or char == "-":
+                newcol = newcol + char
+        print('/' + newcol + "/")
+        newcols.append(newcol)
+
+data_file_df.columns = newcols
 
 # data for 3-07 and 3-08 are missing - so we'll pretend that any data before that is missing as well.
 # these are mostly zero anyway.
-del data_file_df["3-04"]
-del data_file_df["3-05"]
-del data_file_df["3-06"]
-
-# a few more fixes we know we need to make:
-# data_file_df.rename(columns={'-15*':'7-15', '17**':'7-17'}  )
-
-# the above rename didn't work, so here is an alternative (and kludgy) way of doing it:
-cols = data_file_df.columns.values
-x = 0
-for col in cols:
-    if col == '-15*':
-        cols[x] = '7-15'
-    elif col == '17**':
-        cols[x] = '7-17'
-    x = x + 1
-    
-data_file_df.columns = cols
+del data_file_df["03-04"]
+del data_file_df["03-05"]
+del data_file_df["03-06"]
 
 # Here is my way of assigning occurance levels to bins.
 # We will keep and display the raw occurance levels, but these can make visualizations more apparent
@@ -96,12 +101,12 @@ for y in range(0, ylim):
 
 # these days come before a seven-day rolling average can be computed, and so are not wanted
 
-del covid19ravg_df["3-09"]
-del covid19ravg_df["3-10"]
-del covid19ravg_df["3-11"]
-del covid19ravg_df["3-12"]
-del covid19ravg_df["3-13"]
-del covid19ravg_df["3-15"]  # 3-14 is also missing.
+del covid19ravg_df["03-09"]
+del covid19ravg_df["03-10"]
+del covid19ravg_df["03-11"]
+del covid19ravg_df["03-12"]
+del covid19ravg_df["03-13"]
+del covid19ravg_df["03-15"]  # 3-14 is also missing.
 
 # assign grades to rates of occurance
 
