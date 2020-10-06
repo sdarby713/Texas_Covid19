@@ -65,7 +65,7 @@ def assign_grade(value):
 # Additional county information not present in main data file - population and FIPS code have the most continuing relevance
 
 codes_df = pd.read_csv('codes2.csv')
-covid19_df = pd.merge(codes_df, data_file_df,  on="Name")
+covid19_df = pd.merge(codes_df, data_file_df,  on="County Name")
 
 # create a parallel dataframe with rates per 10000 people in county
 covid19rate_df = covid19_df.copy()
