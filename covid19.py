@@ -134,6 +134,7 @@ dates = []
 values = []
 fips = []
 grades = []
+weeks = []
 columns = covid19ravg_df.columns
 
 ylim, xlim = covid19ravg_df.shape
@@ -142,11 +143,17 @@ for y in range(0, ylim):
     cty = covid19ravg_df.iloc[y,0]
     pop = covid19ravg_df.iloc[y,3]
     fip = covid19ravg_df.iloc[y,4]
+    ctr = 99
     for x in range(5, xlim):
+        ctr = ctr + 1
+        if ctr > 7:
+            ctr = 1
+            week = columns[x]
         counties.append(cty)
         populations.append(pop)
         fips.append(fip)
         dates.append(columns[x])
+        weeks.append(week)
         values.append(covid19ravg_df.iloc[y,x])
         grades.append(assign_grade(covid19ravg_df.iloc[y,x]))
         
@@ -155,6 +162,7 @@ covid19ravg2_df = pd.DataFrame({
     "Populations": populations,
     "FIPS": fips,
     "Dates": dates,
+    "Weeks": weeks,
     "Values": values,
     "Grades": grades
     })
