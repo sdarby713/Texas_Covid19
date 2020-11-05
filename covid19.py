@@ -148,7 +148,7 @@ for y in range(0, ylim):
         ctr = ctr + 1
         if ctr > 7:
             ctr = 1
-            week = columns[x]
+        week = ctr      # "week" will now be a day of the week
         counties.append(cty)
         populations.append(pop)
         fips.append(fip)
