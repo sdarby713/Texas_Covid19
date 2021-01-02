@@ -11,8 +11,10 @@ data_file_df = pd.read_excel('Texas COVID-19 Case Count Data by County.xlsx', sk
 
 cols = data_file_df.columns.values
 newcols = []
+colcount = 0
 
 for col in cols:
+    colcount += 1
     if col == 'County Name':
         newcols.append(col)
     else:
@@ -21,6 +23,12 @@ for col in cols:
         for char in col:
             if (char >= "0" and char <= "9") or char == "-":
                 newcol = newcol + char
+
+        if colcount > 301:
+            newcol = "21-" + newcol
+        else:
+            newcol = "20-" + newcol
+
         print('/' + newcol + "/")
         newcols.append(newcol)
 
@@ -28,9 +36,9 @@ data_file_df.columns = newcols
 
 # data for 3-07 and 3-08 are missing - so we'll pretend that any data before that is missing as well.
 # these are mostly zero anyway.
-del data_file_df["03-04"]
-del data_file_df["03-05"]
-del data_file_df["03-06"]
+del data_file_df["20-03-04"]
+del data_file_df["20-03-05"]
+del data_file_df["20-03-06"]
 
 # Here is my way of assigning occurance levels to bins.
 # We will keep and display the raw occurance levels, but these can make visualizations more apparent
@@ -68,6 +76,7 @@ codes_df = pd.read_csv('codes2.csv')
 covid19_df = pd.merge(codes_df, data_file_df,  on="County Name")
 
 # create a parallel dataframe with rates per 10000 people in county
+print ("Creating covid19rate...")
 covid19rate_df = covid19_df.copy()
 
 ylim, xlim = covid19rate_df.shape
@@ -78,6 +87,7 @@ for y in range(0, ylim):
         covid19rate_df.iloc[y,x] = covid19rate_df.iloc[y,x]/pop10000
 
 # create a parallel dataframe showing each day's increment of cases per county
+print ("Creating covid19incr...")
 covid19incr_df = covid19_df.copy()
 ylim, xlim = covid19incr_df.shape
 
@@ -86,6 +96,7 @@ for y in range(0, ylim):
         covid19incr_df.iloc[y,x] = covid19_df.iloc[y,x] - covid19_df.iloc[y,x-1]
 
 # compute the seven-day rolling average of those increments
+print ("Creating covid19ravg...")
 
 covid19ravg_df = covid19_df.copy()
 ylim, xlim = covid19ravg_df.shape
@@ -101,14 +112,15 @@ for y in range(0, ylim):
 
 # these days come before a seven-day rolling average can be computed, and so are not wanted
 
-del covid19ravg_df["03-09"]
-del covid19ravg_df["03-10"]
-del covid19ravg_df["03-11"]
-del covid19ravg_df["03-12"]
-del covid19ravg_df["03-13"]
-del covid19ravg_df["03-15"]  # 3-14 is also missing.
+del covid19ravg_df["20-03-09"]
+del covid19ravg_df["20-03-10"]
+del covid19ravg_df["20-03-11"]
+del covid19ravg_df["20-03-12"]
+del covid19ravg_df["20-03-13"]
+del covid19ravg_df["20-03-15"]  # 3-14 is also missing.
 
 # assign grades to rates of occurance
+print ("Creating covid19grad...")
 
 covid19grad_df = covid19ravg_df.copy()
 ylim, xlim = covid19grad_df.shape
@@ -127,6 +139,7 @@ covid19incr_df.to_csv("covid19incr.csv", index=False, header=True)
 
 
 # This puts the data in a format that's friendlier to Tableau
+print ("Creating covid19ravg2...")
 
 counties = []
 populations = []
